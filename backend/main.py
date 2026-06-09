@@ -303,13 +303,14 @@ def summary():
 
 @app.get("/api/chart/{symbol}")
 def chart(symbol: str, days: int = 90):
+    """OHLCV candlestick data."""
     if symbol not in SYMBOLS:
         raise HTTPException(status_code=404, detail="Symbol not found")
 
     df = query_df(symbol=symbol, days=days)
     if df.empty:
         return {"symbol": symbol, "data": []}
-
+    
     # Ensure datetime column exists
     if "datetime" not in df.columns:
         df = df.reset_index()

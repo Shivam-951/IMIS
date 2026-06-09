@@ -5,7 +5,6 @@ import requests
 requests.adapters.DEFAULT_RETRIES = 1
 import yfinance as yf 
 import pandas as pd 
-from yfinance import yticker
 import numpy as np 
 from datetime import datetime, timedelta
 
@@ -137,10 +136,16 @@ def engineer_features(df: pd.DataFrame, ticker: str) -> pd.DataFrame:
 
 
 # Data Fetcher 
-def fetch_ticker(ticker: str, period: str = "2y") -> pd.DataFrame:
+def fetch_ticker(yTicker: str, period: str = "2y") -> pd.DataFrame:
     """Fetch historical data for one ticker via yfinance."""
     try:
-        raw = yf.download(yticker, period=period, auto_adjust=True, progress=False, timeout=30)
+        raw = yf.download(
+            yTicker, 
+            period=period, 
+            auto_adjust=True, 
+            progress=False, 
+            timeout=30
+        )
         
         if raw.empty:
             return None 

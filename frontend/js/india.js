@@ -1,4 +1,4 @@
-const API_INDIA = "";
+const API_INDIA = "https://imis.onrender.com/";
 
 let indiaData        = [];
 let currentIndiaTicker = null;
