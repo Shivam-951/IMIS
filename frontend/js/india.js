@@ -1,4 +1,4 @@
-const API_INDIA = 'http://127.0.0.1:8000';
+const API_INDIA = "";
 
 let indiaData        = [];
 let currentIndiaTicker = null;
