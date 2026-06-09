@@ -472,10 +472,9 @@ def intelligence_symbol(symbol: str):
 
 @app.get("/api/india/summary")
 def india_summary():
-    """India market summary."""
     try:
         from services.india_data import (
-            get_data, get_latest_row, ALL_SYMBOLS, INDIA_SYMBOLS
+            get_data, get_latest_row, ALL_SYMBOLS
         )
         from services.opportunity_score import compute_score
 
@@ -484,10 +483,9 @@ def india_summary():
 
         for ticker, df in data.items():
             try:
-                row  = get_latest_row(df)
-                info = ALL_SYMBOLS.get(ticker, {})
-
-                score_row = pd.Series({
+                row        = get_latest_row(df)
+                info       = ALL_SYMBOLS.get(ticker, {})
+                score_row  = pd.Series({
                     "rsi_14"        : row["rsi_14"],
                     "macd"          : row["macd"],
                     "macd_signal"   : row["macd_signal"],
@@ -503,16 +501,12 @@ def india_summary():
                     "buy_pressure"  : 0.5,
                     "volatility_30d": row["volatility_30d"]
                 })
-
                 score = compute_score(score_row)
                 rsi   = row["rsi_14"] or 50
 
-                if rsi < 30:
-                    signal, signal_color = "OVERSOLD",   "green"
-                elif rsi > 70:
-                    signal, signal_color = "OVERBOUGHT", "red"
-                else:
-                    signal, signal_color = "NEUTRAL",    "gray"
+                if rsi < 30:   signal, signal_color = "OVERSOLD",   "green"
+                elif rsi > 70: signal, signal_color = "OVERBOUGHT", "red"
+                else:          signal, signal_color = "NEUTRAL",    "gray"
 
                 result.append({
                     "ticker"      : ticker,
@@ -533,9 +527,8 @@ def india_summary():
                     "breakdown"   : score["breakdown"],
                     "date"        : row["datetime"]
                 })
-
             except Exception as e:
-                print(f"India error {ticker}: {e}")
+                print(f"India ticker error {ticker}: {e}")
                 continue
 
         return sorted(result, key=lambda x: x["score"], reverse=True)

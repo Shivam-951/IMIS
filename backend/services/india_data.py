@@ -1,9 +1,11 @@
 import sys 
 import os 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-
+import requests
+requests.adapters.DEFAULT_RETRIES = 1
 import yfinance as yf 
 import pandas as pd 
+from yfinance import yticker
 import numpy as np 
 from datetime import datetime, timedelta
 
@@ -138,7 +140,7 @@ def engineer_features(df: pd.DataFrame, ticker: str) -> pd.DataFrame:
 def fetch_ticker(ticker: str, period: str = "2y") -> pd.DataFrame:
     """Fetch historical data for one ticker via yfinance."""
     try:
-        raw = yf.download(ticker, period=period, auto_adjust=True, progress=False)
+        raw = yf.download(yticker, period=period, auto_adjust=True, progress=False, timeout=30)
         
         if raw.empty:
             return None 

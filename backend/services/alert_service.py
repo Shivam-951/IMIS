@@ -166,7 +166,6 @@ def check_alerts(summary_data: list, sentiment_data: dict) -> list:
 # Storage 
 
 def load_alerts() -> list:
-    """Load alerts from JSON file."""
     if not os.path.exists(ALERTS_FILE):
         return []
     try:
@@ -176,10 +175,12 @@ def load_alerts() -> list:
         return []
     
 def save_alerts(alerts: list):
-    """Save alerts to JSON file."""
-    os.makedirs(os.path.dirname(ALERTS_FILE), exist_ok=True)
-    with open(ALERTS_FILE, "w") as f:
-        json.dump(alerts, f, indent=2)
+    try:
+        os.makedirs(os.path.dirname(ALERTS_FILE), exist_ok=True)
+        with open(ALERTS_FILE, "w") as f:
+            json.dump(alerts, f, indent=2)
+    except Exception as e:
+        print(f"Could not save alerts: {e}")
         
 def merge_alerts(existing: list, new_alerts: list) -> list:
     """ 
