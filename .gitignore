@@ -1,0 +1,21 @@
+# Data files — too large for GitHub
+data/raw/
+data/extracted/
+data/validated/
+data/master/
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# Logs
+logs/
+
+# Models — large files
+backend/models/saved/
+
+# VS Code
+.vscode/
