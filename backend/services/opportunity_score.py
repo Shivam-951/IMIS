@@ -205,13 +205,20 @@ def get_master_df():
     """Get master dataframe from main memory store or parquet fallback."""
     try:
         import sys
-        main_module = sys.modules.get('main')
-        if main_module and hasattr(main_module, 'get_master'):
-            return main_module.get_master()
-    except Exception:
-        pass
+        # Try getting from main module store
+        for mod_name in ['main', 'backend.main']:
+            main_module = sys.modules.get(mod_name)
+            if main_module and hasattr(main_module, '_store'):
+                store = main_module._store
+                if store.get("master") is not None:
+                    return store["master"]
+    except Exception as e:
+        print(f"Memory store access error: {e}")
+
+    # Fallback to parquet
     if os.path.exists(MASTER_PATH):
         return pd.read_parquet(MASTER_PATH)
+
     return None
 
 

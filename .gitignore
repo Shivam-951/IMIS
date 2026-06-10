@@ -14,8 +14,7 @@ __pycache__/
 # Logs
 logs/
 
-# Models — large files
-backend/models/saved/
+
 
 # VS Code
 .vscode/
