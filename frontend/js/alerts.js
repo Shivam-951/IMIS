@@ -1,4 +1,4 @@
-const API_INDIA = '';
+const API = '';
 
 let allAlerts = [];
 async function loadAlerts(){
@@ -58,7 +58,7 @@ function filterAlertsBySeverity(sev){
     );
     const filtered = sev === 'all' ? allAlerts
         : allAlerts.filter(a => a.severity === sev);
-    refreshAlerts(filtered);
+    renderAlerts(filtered);
 }
 
 document.querySelectorAll('.sev-btn').forEach(btn => {
