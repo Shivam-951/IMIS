@@ -1,5 +1,3 @@
-const API = '';
-
 let allAlerts = [];
 async function loadAlerts(){
     try{
