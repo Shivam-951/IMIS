@@ -2,7 +2,6 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-import duckdb
 import pandas as pd
 import numpy as np
 
@@ -202,39 +201,49 @@ def compute_score(row: pd.Series) -> dict:
     }
 
 
+def get_master_df():
+    """Get master dataframe from main memory store or parquet fallback."""
+    try:
+        import sys
+        main_module = sys.modules.get('main')
+        if main_module and hasattr(main_module, 'get_master'):
+            return main_module.get_master()
+    except Exception:
+        pass
+    if os.path.exists(MASTER_PATH):
+        return pd.read_parquet(MASTER_PATH)
+    return None
+
+
 def get_all_scores() -> list:
     """Get opportunity scores for all symbols — latest data only."""
-    con  = duckdb.connect()
-    path = get_path()
+    df = get_master_df()
+    if df is None or df.empty:
+        return []
 
-    df = con.execute(f"""
-        SELECT symbol, datetime, close, rsi_14, macd, macd_signal,
-               macd_hist, sma_50, sma_200, above_sma50, above_sma200,
-               golden_cross, death_cross, volume_ratio, buy_pressure,
-               volatility_30d, return_1d, return_7d, atr_14
-        FROM read_parquet('{path}')
-        WHERE CAST(datetime AS TIMESTAMP) = (
-            SELECT MAX(CAST(datetime AS TIMESTAMP))
-            FROM read_parquet('{path}')
-        )
-        ORDER BY symbol
-    """).df()
+    if "datetime" not in df.columns:
+        df = df.reset_index()
+        if "Date" in df.columns:
+            df.rename(columns={"Date": "datetime"}, inplace=True)
+
+    df["datetime"] = pd.to_datetime(df["datetime"])
+    latest = df.sort_values("datetime").groupby("symbol").tail(1)
 
     results = []
-    for _, row in df.iterrows():
+    for _, row in latest.iterrows():
         score = compute_score(row)
         results.append({
-            "symbol"      : row["symbol"],
-            "date"        : str(row["datetime"])[:10],
-            "price"       : round(float(row["close"]), 4),
-            "score"       : score["total"],
-            "label"       : score["label"],
-            "color"       : score["color"],
-            "action"      : score["action"],
-            "breakdown"   : score["breakdown"],
-            "rsi"         : round(float(row["rsi_14"]), 2),
-            "return_1d"   : round(float(row["return_1d"]) * 100, 2),
-            "return_7d"   : round(float(row["return_7d"]) * 100, 2),
+            "symbol"   : row["symbol"],
+            "date"     : str(row["datetime"])[:10],
+            "price"    : round(float(row["close"]), 4),
+            "score"    : score["total"],
+            "label"    : score["label"],
+            "color"    : score["color"],
+            "action"   : score["action"],
+            "breakdown": score["breakdown"],
+            "rsi"      : round(float(row["rsi_14"]), 2),
+            "return_1d": round(float(row["return_1d"]) * 100, 2),
+            "return_7d": round(float(row["return_7d"]) * 100, 2),
         })
 
     return sorted(results, key=lambda x: x["score"], reverse=True)
@@ -242,8 +251,7 @@ def get_all_scores() -> list:
 
 def get_score(symbol: str) -> dict:
     """Get opportunity score for one symbol."""
-    all_scores = get_all_scores()
-    for s in all_scores:
+    for s in get_all_scores():
         if s["symbol"] == symbol:
             return s
     return None

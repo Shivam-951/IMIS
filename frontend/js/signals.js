@@ -1,3 +1,4 @@
+const API = '';
 
 async function loadSignals() {
   try {

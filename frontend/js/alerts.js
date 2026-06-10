@@ -1,3 +1,5 @@
+const API_INDIA = '';
+
 let allAlerts = [];
 async function loadAlerts(){
     try{

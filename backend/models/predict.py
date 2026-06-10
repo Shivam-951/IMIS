@@ -149,13 +149,44 @@ def get_market_regime(symbol: str, df: pd.DataFrame) -> dict:
     }
 
 
+def get_master_df():
+    """Get master dataframe from main memory store or parquet fallback."""
+    try:
+        import sys
+        main_module = sys.modules.get('main')
+        if main_module and hasattr(main_module, 'get_master'):
+            return main_module.get_master()
+    except Exception:
+        pass
+    if os.path.exists(DATA_PATH):
+        return pd.read_parquet(DATA_PATH)
+    return None
+
+
 def get_intelligence(symbol: str) -> dict:
-    """
-    Full intelligence summary for one symbol.
-    Combines rule-based signals + ML regime models.
-    """
-    master = pd.read_parquet(DATA_PATH)
-    df     = master[master["symbol"] == symbol].copy()
+    """Full intelligence summary for one symbol."""
+    master = get_master_df()
+
+    if master is None or master.empty:
+        return {
+            "symbol"         : symbol,
+            "trend"          : "Unknown",
+            "trend_color"    : "#7a7f96",
+            "momentum"       : "Unknown",
+            "momentum_color" : "#7a7f96",
+            "volatility"     : "Unknown",
+            "volatility_color": "#7a7f96",
+            "regime"         : "Unknown",
+            "regime_color"   : "#7a7f96",
+            "note"           : "Data not available"
+        }
+
+    if "datetime" not in master.columns:
+        master = master.reset_index()
+        if "Date" in master.columns:
+            master.rename(columns={"Date": "datetime"}, inplace=True)
+
+    df = master[master["symbol"] == symbol].copy()
 
     if df.empty:
         return None
@@ -167,19 +198,18 @@ def get_intelligence(symbol: str) -> dict:
     regime     = get_market_regime(symbol, df)
 
     return {
-        "symbol"     : symbol,
-        "date"       : str(latest["datetime"])[:10],
-        "trend"      : trend["trend"],
-        "trend_color": trend["trend_color"],
-        "momentum"   : trend["momentum"],
-        "momentum_color": trend["momentum_color"],
-        "volatility" : volatility["label"],
+        "symbol"          : symbol,
+        "date"            : str(latest["datetime"])[:10],
+        "trend"           : trend["trend"],
+        "trend_color"     : trend["trend_color"],
+        "momentum"        : trend["momentum"],
+        "momentum_color"  : trend["momentum_color"],
+        "volatility"      : volatility["label"],
         "volatility_color": volatility["color"],
-        "regime"     : regime["label"],
-        "regime_color": regime["color"],
-        "note"       : "ML-assisted regime detection. Not financial advice."
+        "regime"          : regime["label"],
+        "regime_color"    : regime["color"],
+        "note"            : "ML-assisted regime detection. Not financial advice."
     }
-
 
 def get_all_intelligence() -> list:
     SYMBOLS = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT"]
