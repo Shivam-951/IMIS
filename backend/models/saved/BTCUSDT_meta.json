@@ -1,0 +1,64 @@
+{
+  "symbol": "BTCUSDT",
+  "feature_names": [
+    "return_1d",
+    "return_7d",
+    "return_30d",
+    "log_return",
+    "volatility_7d",
+    "volatility_14d",
+    "volatility_30d",
+    "rsi_14",
+    "rsi_7",
+    "macd",
+    "macd_signal",
+    "macd_hist",
+    "bb_width",
+    "bb_position",
+    "sma_7",
+    "sma_21",
+    "sma_50",
+    "volume_ratio",
+    "buy_pressure",
+    "price_position",
+    "atr_14",
+    "above_sma50",
+    "above_sma200",
+    "golden_cross",
+    "death_cross",
+    "return_lag_1",
+    "return_lag_2",
+    "return_lag_3",
+    "rsi_lag_1",
+    "rsi_lag_2",
+    "rsi_lag_3",
+    "macd_lag_1",
+    "macd_lag_2",
+    "macd_lag_3"
+  ],
+  "cv_accuracy": 0.5023,
+  "n_samples": 2299,
+  "top_features": [
+    [
+      "above_sma50",
+      0.04779861494898796
+    ],
+    [
+      "return_30d",
+      0.034314896911382675
+    ],
+    [
+      "rsi_lag_1",
+      0.03409240394830704
+    ],
+    [
+      "bb_position",
+      0.034058548510074615
+    ],
+    [
+      "sma_21",
+      0.034045226871967316
+    ]
+  ],
+  "trained_at": "2026-06-08T16:50:28.079061"
+}

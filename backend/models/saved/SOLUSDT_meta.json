@@ -1,0 +1,64 @@
+{
+  "symbol": "SOLUSDT",
+  "feature_names": [
+    "return_1d",
+    "return_7d",
+    "return_30d",
+    "log_return",
+    "volatility_7d",
+    "volatility_14d",
+    "volatility_30d",
+    "rsi_14",
+    "rsi_7",
+    "macd",
+    "macd_signal",
+    "macd_hist",
+    "bb_width",
+    "bb_position",
+    "sma_7",
+    "sma_21",
+    "sma_50",
+    "volume_ratio",
+    "buy_pressure",
+    "price_position",
+    "atr_14",
+    "above_sma50",
+    "above_sma200",
+    "golden_cross",
+    "death_cross",
+    "return_lag_1",
+    "return_lag_2",
+    "return_lag_3",
+    "rsi_lag_1",
+    "rsi_lag_2",
+    "rsi_lag_3",
+    "macd_lag_1",
+    "macd_lag_2",
+    "macd_lag_3"
+  ],
+  "cv_accuracy": 0.5141,
+  "n_samples": 2041,
+  "top_features": [
+    [
+      "macd_hist",
+      0.03695095330476761
+    ],
+    [
+      "volatility_7d",
+      0.036710213869810104
+    ],
+    [
+      "macd_lag_1",
+      0.03590158745646477
+    ],
+    [
+      "macd_lag_2",
+      0.03563482314348221
+    ],
+    [
+      "price_position",
+      0.03557571396231651
+    ]
+  ],
+  "trained_at": "2026-06-08T16:50:29.578389"
+}
